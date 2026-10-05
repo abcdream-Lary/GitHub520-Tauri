@@ -15,7 +15,12 @@
 
 ## 下载
 
-从 [Releases](../../releases) 下载 `github520-1.0.0.exe`，双击即用，无需安装。
+从 [Releases](../../releases) 下载对应版本，双击即用，无需安装：
+
+| 文件 | 适用系统 |
+| --- | --- |
+| `github520-1.0.0.exe` | 64 位（Windows 10/11 绝大多数设备） |
+| `github520-1.0.0-x86.exe` | 32 位（老旧设备 / 32 位 Windows） |
 
 系统要求：Windows 10 1809 及以上（需 WebView2 Runtime，Win11 自带；Win10 缺失时系统会提示安装）。
 
