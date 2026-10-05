@@ -1412,7 +1412,7 @@ dependencies = [
 
 [[package]]
 name = "github520-tauri"
-version = "1.0.1"
+version = "1.0.0"
 dependencies = [
  "indexmap 1.8.2",
  "reqwest 0.12.28",
