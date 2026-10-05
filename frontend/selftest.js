@@ -89,6 +89,16 @@
     const envText = envDt && envDt.nextElementSibling ? envDt.nextElementSibling.textContent : '';
     ok('关于页运行环境显示 WebView2', envText.includes('WebView2') && !envText.includes('Node -'), envText.trim());
 
+    // 本次新增：hosts 检测处「打开目录」入口 + 退出确认框（点取消，不会真的退出）
+    ok('hosts 检测处有「打开目录」按钮', !!$('[data-act="open-hosts-dir"]'),
+      $('[data-act="open-hosts-dir"]') ? '已渲染' : '未找到');
+    $('[data-act="quit"]').click();
+    await sleep(250);
+    const cmShown = !$('#modalRoot').hidden && !!$('#cm-ok');
+    ok('退出确认框正常弹出（自绘模态）', cmShown, cmShown ? '可点取消关闭' : '未弹出');
+    if (cmShown) closeModal();
+    await sleep(150);
+
     const st = await window.api.win.state();
     ok('窗口状态可查询', typeof st === 'object' && 'maximized' in st, JSON.stringify(st));
 

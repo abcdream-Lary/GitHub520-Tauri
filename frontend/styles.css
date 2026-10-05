@@ -44,8 +44,11 @@
   /* 窗口圆角：0 —— 不透明窗口做不出真圆角（透明窗口才有，但拖动会残影），
      留着 CSS 圆角只会把内容四角裁掉、露出窗口白底，反而像缺了一块 */
   --r-win: 0;
-  --r: 10px;
-  --r-sm: 7px;
+  --r-lg: 12px; /* 大容器：模态框 */
+  --r: 10px; /* 容器：卡片、浮层、toast */
+  --r-sm: 8px; /* 控件：按钮、输入框、下拉项 */
+  --r-xs: 6px; /* 微型元素：小标签、品牌图标 */
+  --r-pill: 999px; /* 胶囊：开关、标签 */
 
   /* 窗口轮廓线：四边统一 1px、低透明度黑（对齐 WorkBuddy 那种淡窗口边框）。
      注意：用 .app 的真实 border 画，不要用 inset box-shadow /
@@ -58,9 +61,9 @@
   --sh-md: 0 6px 18px -6px rgba(16, 24, 40, 0.16), 0 1px 3px rgba(16, 24, 40, 0.06);
   --sh-lg: 0 28px 68px -16px rgba(16, 24, 40, 0.3), 0 2px 8px rgba(16, 24, 40, 0.08);
 
-  /* 焦点 / 选中描边：低透明度纯黑，四边等宽（与 Windows 原生焦点框同一套语言） */
-  --ring: rgba(16, 24, 40, 0.8);
-  --ring-strong: rgba(16, 24, 40, 0.8);
+  /* 焦点 / 选中描边：主题蓝半透明（对输入框用柔和光晕，见 .input:focus） */
+  --ring: rgba(9, 105, 218, 0.5);
+  --ring-strong: rgba(9, 105, 218, 0.55);
 
   --tb-h: 46px;
   --sidebar-w: 216px;
@@ -179,7 +182,7 @@ body.maximized.focused .app {
 .brand-icon {
   width: 17px;
   height: 17px;
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   align-self: center;
   pointer-events: none;
 }
@@ -544,7 +547,7 @@ body.maximized .win-btn .ico-restore {
   gap: 6px;
   height: 32px;
   padding: 0 13px;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   border: 1px solid var(--border-strong);
   background: #fff;
   color: var(--text);
@@ -609,13 +612,13 @@ body.maximized .win-btn .ico-restore {
   height: 27px;
   padding: 0 10px;
   font-size: 12px;
-  border-radius: 7px;
+  border-radius: var(--r-sm);
 }
 .btn.icon {
   width: 29px;
   height: 29px;
   padding: 0;
-  border-radius: 7px;
+  border-radius: var(--r-sm);
   border-color: transparent;
   background: transparent;
   color: var(--text-3);
@@ -633,7 +636,7 @@ body.maximized .win-btn .ico-restore {
 .select {
   height: 32px;
   padding: 0 10px;
-  border-radius: 8px;
+  border-radius: var(--r-sm);
   border: 1px solid var(--border-strong);
   background: #fff;
   font-family: inherit;
@@ -648,9 +651,10 @@ body.maximized .win-btn .ico-restore {
 }
 .input:focus,
 .select:focus {
-  border-color: var(--ring-strong);
-  outline: 1px solid var(--ring);
-  outline-offset: -1px;
+  border-color: var(--accent);
+  outline: none;
+  /* 柔和光晕替代硬描边黑框，且显式覆盖全局 :focus-visible 的描边 */
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .input.mono {
   font-family: var(--mono);
@@ -705,7 +709,7 @@ body.maximized .win-btn .ico-restore {
   padding: 5px;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--r);
   box-shadow: var(--sh-md);
   animation: ddIn 0.13s ease;
 }
@@ -728,7 +732,7 @@ body.maximized .win-btn .ico-restore {
   gap: 8px;
   height: 30px;
   padding: 0 9px;
-  border-radius: 6px;
+  border-radius: var(--r-xs);
   font-size: 12.5px;
   color: var(--text);
   white-space: nowrap;
@@ -801,14 +805,12 @@ body.maximized .win-btn .ico-restore {
 }
 .field.invalid .input {
   border-color: var(--bad);
-  outline: 1px solid var(--bad-soft);
-  outline-offset: -1px;
 }
-/* 修复优先级：invalid 字段聚焦时仍是错误色描边，而不是被 :focus 的黑色覆盖 */
+/* 修复优先级：invalid 字段聚焦时仍是错误色柔和光晕，而不是被 :focus 的主题色覆盖 */
 .field.invalid .input:focus {
   border-color: var(--bad);
-  outline: 1px solid var(--bad);
-  outline-offset: -1px;
+  box-shadow: 0 0 0 3px var(--bad-soft);
+  outline: none;
 }
 .row2 {
   display: grid;
@@ -1087,7 +1089,7 @@ body.maximized .win-btn .ico-restore {
   gap: 4px;
   height: 19px;
   padding: 0 7px;
-  border-radius: 5px;
+  border-radius: var(--r-xs);
   font-size: 10.5px;
   font-weight: 640;
   letter-spacing: 0.2px;
@@ -1380,7 +1382,7 @@ body.maximized .win-btn .ico-restore {
   width: 100%;
   max-width: 430px;
   background: #fff;
-  border-radius: 13px;
+  border-radius: var(--r-lg);
   box-shadow: var(--sh-lg);
   overflow: hidden;
   animation: pop 0.19s cubic-bezier(0.22, 1.2, 0.36, 1);
@@ -1445,7 +1447,7 @@ body.maximized .win-btn .ico-restore {
   min-width: 210px;
   max-width: 340px;
   padding: 10px 13px;
-  border-radius: 10px;
+  border-radius: var(--r);
   background: #fff;
   border: 1px solid var(--border);
   box-shadow: var(--sh-md);

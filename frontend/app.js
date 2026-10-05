@@ -618,6 +618,7 @@ function pageSettings() {
           <div class="meta"><div class="t">系统 hosts 路径</div><div class="d">${esc(S.hostsPath)}</div></div>
           <div class="ctl">
             <span class="tag ${S.canWrite ? 'ok' : 'warn'}">${S.canWrite ? '可写入' : '需提权'}</span>
+            <button class="btn sm ghost" data-act="open-hosts-dir" title="在资源管理器中打开 hosts 所在文件夹">打开目录</button>
             <button class="btn sm" data-act="recheck">重新检测</button>
           </div>
         </div>
@@ -874,6 +875,28 @@ function closeModal() {
   $('#modal').innerHTML = '';
 }
 
+/* 通用确认框：复用自绘模态。
+   不用系统对话框——无 owner 窗口时它会跑到主窗口背后（用户看不到，表现为"按钮没反应"）。 */
+function confirmModal({ title, message, detail, okText = '确定', danger = false, onOk }) {
+  openModal(`
+    <div class="modal-head">
+      <h3>${esc(title)}</h3>
+      <p>${esc(message)}</p>
+    </div>
+    ${detail ? `<div class="modal-body"><p class="hint" style="margin:0">${esc(detail)}</p></div>` : ''}
+    <div class="modal-foot">
+      <button class="btn" data-close="1">取消</button>
+      <button class="btn ${danger ? 'danger' : 'primary'}" id="cm-ok">${esc(okText)}</button>
+    </div>`);
+  // 危险操作默认焦点给「取消」，避免习惯性回车误触
+  const cancelBtn = $('#modal .modal-foot [data-close]');
+  if (cancelBtn) cancelBtn.focus();
+  $('#cm-ok').addEventListener('click', () => {
+    closeModal();
+    onOk();
+  });
+}
+
 function entryModal(entry) {
   const isNew = !entry;
   const e = entry || { ip: '', hosts: [], comment: '', enabled: true };
@@ -1039,6 +1062,21 @@ function ddClose() {
   ddState = null;
 }
 
+/* 重算下拉位置：页面滚动/窗口缩放时跟随触发按钮
+   （此前只在打开时定位一次，滚动后菜单留在原地 → "不跟随/位置偏移"） */
+function ddPlace() {
+  if (!ddState) return;
+  const { btn, pop } = ddState;
+  const r = btn.getBoundingClientRect();
+  const pw = Math.max(pop.offsetWidth, r.width);
+  const ph = pop.offsetHeight;
+  const x = Math.max(8, Math.min(r.left, window.innerWidth - pw - 8));
+  let y = r.bottom + 6;
+  if (y + ph > window.innerHeight - 8) y = Math.max(8, r.top - ph - 6);
+  pop.style.left = x + 'px';
+  pop.style.top = y + 'px';
+}
+
 function ddHighlight() {
   if (!ddState) return;
   Array.from(ddState.pop.children).forEach((el, i) => el.classList.toggle('hl', i === ddState.hl));
@@ -1064,20 +1102,11 @@ function ddOpen(btn) {
     )
     .join('');
   document.body.appendChild(pop);
-
-  // 定位：优先向下；底部放不下向上翻；水平贴按钮左缘且不超出窗口
-  const r = btn.getBoundingClientRect();
-  const pw = Math.max(pop.offsetWidth, r.width);
-  const ph = pop.offsetHeight;
-  let x = Math.max(8, Math.min(r.left, window.innerWidth - pw - 8));
-  let y = r.bottom + 6;
-  if (y + ph > window.innerHeight - 8) y = Math.max(8, r.top - ph - 6);
-  pop.style.left = x + 'px';
-  pop.style.top = y + 'px';
-  pop.style.minWidth = r.width + 'px';
+  pop.style.minWidth = btn.getBoundingClientRect().width + 'px';
 
   ddState = { id: btn.dataset.dd, btn, pop, options, hl: Math.max(0, options.findIndex(([v]) => String(v) === value)) };
   btn.classList.add('open');
+  ddPlace();
   ddHighlight();
 }
 
@@ -1185,6 +1214,10 @@ function bindEvents() {
     });
     if (t && !t.classList.contains('is-hover')) t.classList.add('is-hover');
   });
+
+  // 下拉开着时，滚动/缩放让菜单跟随触发按钮（捕获阶段监听，覆盖内部滚动容器）
+  window.addEventListener('scroll', () => ddPlace(), true);
+  window.addEventListener('resize', () => ddPlace());
 
   $('#btnClose').addEventListener('click', () => window.api.win.close());
   $('#titlebar').addEventListener('dblclick', (e) => {
@@ -1402,13 +1435,21 @@ function bindEvents() {
       case 'open-backup':
         await window.api.shell.open(S.info.userData + '\\backups');
         break;
+      case 'open-hosts-dir': {
+        // 打开系统 hosts 文件所在文件夹（C:\Windows\System32\drivers\etc）
+        const dir = String(S.hostsPath || '').replace(/[\\/][^\\/]*$/, '');
+        await window.api.shell.open(dir || 'C:\\Windows\\System32\\drivers\\etc');
+        break;
+      }
       case 'quit': {
-        const go = await window.api.dialog.confirm({
+        confirmModal({
           title: '退出 GitHub520',
           message: '确定要退出应用吗？',
           detail: '退出后自动同步将停止；下次开机需手动启动（除非已开启开机自启）。',
+          okText: '退出',
+          danger: true,
+          onOk: () => window.api.quit(),
         });
-        if (go) window.api.quit();
         break;
       }
     }
