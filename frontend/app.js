@@ -1176,6 +1176,16 @@ function bindEvents() {
   // 窗口按钮
   $('#btnMin').addEventListener('click', () => window.api.win.minimize());
   $('#btnMax').addEventListener('click', () => window.api.win.toggleMax());
+  // 标题栏按钮悬停高亮改为 JS 驱动：窗口隐藏期间没有 mousemove 事件，
+  // 若用 CSS :hover 会在下次唤起时残留“选中态”（如右上角关闭按钮发红）
+  document.addEventListener('mousemove', (e) => {
+    const t = e.target && e.target.closest ? e.target.closest('.win-btn') : null;
+    $$('.win-btn.is-hover').forEach((b) => {
+      if (b !== t) b.classList.remove('is-hover');
+    });
+    if (t && !t.classList.contains('is-hover')) t.classList.add('is-hover');
+  });
+
   $('#btnClose').addEventListener('click', () => window.api.win.close());
   $('#titlebar').addEventListener('dblclick', (e) => {
     if (e.target.closest('button')) return;

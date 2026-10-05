@@ -277,16 +277,17 @@ body.maximized.focused .app {
   stroke-width: 1.25;
   stroke-linecap: round;
 }
-.win-btn:hover {
+/* 悬停高亮由 JS 驱动（.is-hover）：窗口隐藏期间没有 mousemove，不会冻结 :hover 残留态 */
+.win-btn.is-hover {
   background: rgba(16, 24, 40, 0.07);
   color: var(--text);
 }
-.win-btn:active {
-  background: rgba(16, 24, 40, 0.11);
-}
-.win-btn.close:hover {
+.win-btn.close.is-hover {
   background: var(--bad);
   color: #fff;
+}
+.win-btn:active {
+  background: rgba(16, 24, 40, 0.11);
 }
 .win-btn.close:active {
   background: #a40e26;
