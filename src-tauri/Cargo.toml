@@ -1,0 +1,40 @@
+[package]
+name = "github520-tauri"
+version = "1.0.0"
+description = "GitHub520 桌面版 · Hosts 管理 / 自动同步 / 延迟测速"
+authors = ["sokach"]
+edition = "2021"
+rust-version = "1.77.2"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+# 同上：构建依赖侧（tauri-build → schemars）也需要 indexmap 的 std 特性，
+# resolver v2 下构建依赖与常规依赖的特性是分开解析的，两边都得打开。
+indexmap = { version = "1.8", features = ["std"] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "image-png", "image-ico"] }
+tauri-plugin-opener = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-autostart = "2"
+tauri-plugin-single-instance = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+reqwest = { version = "0.12", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+rfd = "0.15"
+# 读 WebView2 Runtime 版本（关于页展示用）；不用 tauri::webview_version()，
+# 它在命令线程上有阻塞风险（曾导致 app_info 永不返回、自检挂死）。
+winreg = "0.55"
+# 构建期依赖修复：schemars 0.8.22 写死了 indexmap::IndexMap<K, V> 两个泛型，
+# 只有 indexmap 1.x 的 std 特性打开（has_std）时第三个泛型才有默认值 RandomState。
+# 这里显式打开，避免依赖树里某个 default-features = false 把 std 关掉导致编译失败。
+# 应用代码本身不使用 indexmap。
+indexmap = { version = "1.8", features = ["std"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true

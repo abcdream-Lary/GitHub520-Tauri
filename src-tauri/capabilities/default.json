@@ -1,0 +1,17 @@
+{
+  "identifier": "default",
+  "description": "GitHub520 桌面端所需权限：窗口控制、事件、系统能力插件",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "core:app:default",
+    "core:event:default",
+    "core:window:default",
+    "core:webview:default",
+    "core:path:default",
+    "opener:default",
+    "notification:default",
+    "dialog:default",
+    "autostart:default"
+  ]
+}

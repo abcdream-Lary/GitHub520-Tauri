@@ -1,0 +1,20 @@
+{
+  "name": "github520-tauri",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "shim": "esbuild tools/shim-entry.js --bundle --format=iife --global-name=GH520Tauri --outfile=frontend/tauri-api.js --minify",
+    "icons": "tauri icon src-tauri/icon.png",
+    "dev": "tauri dev",
+    "build": "npm run shim && tauri build",
+    "build:debug": "npm run shim && tauri build --debug"
+  },
+  "devDependencies": {
+    "@esbuild/win32-x64": "^0.28.2",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/cli": "^2",
+    "@tauri-apps/cli-win32-x64-msvc": "^2.12.1",
+    "esbuild": "^0.25.0"
+  }
+}
