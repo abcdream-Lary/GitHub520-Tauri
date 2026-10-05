@@ -105,9 +105,10 @@
     // 悬停残留回归：模拟「悬停关闭按钮 → 关闭到托盘 → 从后台唤起」
     const closeBtn = $('#btnClose');
     closeBtn.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+    // 同步读取：dispatchEvent 同步执行处理器；异步等待会被 win:focus 清理逻辑干扰
+    const hoveredNow = closeBtn.classList.contains('is-hover');
     await sleep(100);
-    ok('悬停高亮由 mousemove 驱动', closeBtn.classList.contains('is-hover'),
-      'is-hover=' + closeBtn.classList.contains('is-hover'));
+    ok('悬停高亮由 mousemove 驱动', hoveredNow, 'is-hover=' + hoveredNow);
     await window.api.win.close();
     await sleep(400);
     await window.api.win.show();

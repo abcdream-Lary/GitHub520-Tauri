@@ -618,8 +618,8 @@ function pageSettings() {
           <div class="meta"><div class="t">系统 hosts 路径</div><div class="d">${esc(S.hostsPath)}</div></div>
           <div class="ctl">
             <span class="tag ${S.canWrite ? 'ok' : 'warn'}">${S.canWrite ? '可写入' : '需提权'}</span>
-            <button class="btn sm ghost" data-act="open-hosts-dir" title="在资源管理器中打开 hosts 所在文件夹">打开目录</button>
             <button class="btn sm" data-act="recheck">重新检测</button>
+            <button class="btn sm ghost" data-act="open-hosts-dir" title="在资源管理器中打开 hosts 所在文件夹">打开目录</button>
           </div>
         </div>
         <div class="setting">
