@@ -1,6 +1,6 @@
 [package]
 name = "github520-tauri"
-version = "1.0.0"
+version = "1.0.1"
 description = "GitHub520 桌面版 · Hosts 管理 / 自动同步 / 延迟测速"
 authors = ["sokach"]
 edition = "2021"
