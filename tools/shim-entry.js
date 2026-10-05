@@ -50,6 +50,7 @@ const api = {
     minimize: () => invoke('win_minimize'),
     toggleMax: () => invoke('win_toggle_max'),
     close: () => invoke('win_close'),
+    show: () => invoke('win_show'),
     state: () => invoke('win_state'),
     dragStart: (sx, sy) => invoke('win_drag_start', { sx, sy }),
     dragMove: (sx, sy) => invoke('win_drag_move', { sx, sy }),

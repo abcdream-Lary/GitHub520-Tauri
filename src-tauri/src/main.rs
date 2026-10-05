@@ -373,6 +373,15 @@ fn win_toggle_max(window: tauri::WebviewWindow) {
 #[tauri::command]
 fn win_close(window: tauri::WebviewWindow) {
     let _ = window.hide();
+    // 与系统关闭路径（CloseRequested）同语义：前端靠这个事件收起下拉/模态/悬停残留
+    let _ = window.emit("win:hidden", ());
+}
+
+/// 唤起窗口（与托盘菜单/单实例唤起同语义；自检用它模拟"从后台开启窗口"）
+#[tauri::command]
+fn win_show(window: tauri::WebviewWindow) {
+    let _ = window.show();
+    let _ = window.set_focus();
 }
 
 #[tauri::command]
@@ -731,6 +740,7 @@ fn main() {
             win_minimize,
             win_toggle_max,
             win_close,
+            win_show,
             win_state,
             win_drag_start,
             win_drag_move,

@@ -1430,12 +1430,18 @@ function bindEvents() {
   window.api.on('win:state', (s) => document.body.classList.toggle('maximized', !!s.maximized));
   window.api.on('win:focus', (s) => {
     document.body.classList.toggle('focused', !!s.focused);
-    if (!s.focused) ddClose(); // 失焦时收起下拉，避免回到窗口时残留一个旧弹层
+    if (s.focused) {
+      // 唤起窗口时清掉冻结的悬停高亮（隐藏期间没有 mousemove 来刷新）
+      $$('.win-btn.is-hover').forEach((b) => b.classList.remove('is-hover'));
+    } else {
+      ddClose(); // 失焦时收起下拉，避免回到窗口时残留一个旧弹层
+    }
   });
   // 关闭到托盘：收起下拉与模态框，下次显示窗口时界面是干净的
   window.api.on('win:hidden', () => {
     ddClose();
     if (!$('#modalRoot').hidden) closeModal();
+    $$('.win-btn.is-hover').forEach((b) => b.classList.remove('is-hover'));
   });
   window.api.on('speed:progress', ({ row, prog }) => {
     S.speed.done = prog.finished;

@@ -91,6 +91,19 @@
 
     const st = await window.api.win.state();
     ok('窗口状态可查询', typeof st === 'object' && 'maximized' in st, JSON.stringify(st));
+
+    // 悬停残留回归：模拟「悬停关闭按钮 → 关闭到托盘 → 从后台唤起」
+    const closeBtn = $('#btnClose');
+    closeBtn.dispatchEvent(new MouseEvent('mousemove', { bubbles: true }));
+    await sleep(100);
+    ok('悬停高亮由 mousemove 驱动', closeBtn.classList.contains('is-hover'),
+      'is-hover=' + closeBtn.classList.contains('is-hover'));
+    await window.api.win.close();
+    await sleep(400);
+    await window.api.win.show();
+    await sleep(400);
+    const resid = closeBtn.classList.contains('is-hover');
+    ok('唤起后关闭按钮无残留高亮', !resid, 'is-hover=' + resid);
   } catch (e) {
     log('EXCEPTION ' + ((e && e.message) || String(e)));
     ok('自检脚本执行异常', false, (e && e.message) || String(e));
